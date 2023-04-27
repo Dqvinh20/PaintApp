@@ -1,0 +1,316 @@
+﻿<Fluent:RibbonWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Fluent="urn:fluent-ribbon"
+        xmlns:local="clr-namespace:PaintApp"
+        xmlns:controlzex="urn:controlzex" 
+        x:Class="PaintApp.MainWindow"
+        mc:Ignorable="d"
+        Title="Paint" Height="700" Width="1250" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="PaintApp_Loaded" Closing="PaintApp_Closing">
+    <Fluent:RibbonWindow.Resources>
+        <Style x:Key="DisableMouseOver" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="RadioButton" x:Key="ColorChangeRadioButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <Border x:Name="circularBorder"
+                                Padding="0"
+                                CornerRadius="{Binding Path=ActualHeight, ElementName=circularBorder}" 
+                                Width="{Binding Path=ActualHeight, ElementName=circularBorder}"
+                                BorderThickness="1"
+                            >
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="{DynamicResource Gray5}"/>
+                            </Border.BorderBrush>
+                            <Grid>
+                                <Ellipse d:Fill="{TemplateBinding Background}" Fill="{TemplateBinding Background}"/>
+                                <ContentPresenter />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Fluent:RibbonWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Fluent:Ribbon Grid.Row="0" CanCustomizeQuickAccessToolBarItems="False" CanQuickAccessLocationChanging="False" IsQuickAccessToolBarMenuDropDownVisible="False">
+            <Fluent:Ribbon.QuickAccessItems>
+                <Fluent:QuickAccessMenuItem IsChecked="true">
+                    <Fluent:Button Name="undoButton" Header="Undo" Icon="Images/icons8-undo-26.png" Click="onUndoButtonClick"/>
+                </Fluent:QuickAccessMenuItem>
+                <Fluent:QuickAccessMenuItem IsChecked="true">
+                    <Fluent:Button Name="redoButton" Header="Redo" Icon="Images/icons8-redo-26.png" Click="onRedoButtonClick"/>
+                </Fluent:QuickAccessMenuItem>
+            </Fluent:Ribbon.QuickAccessItems>
+
+            <!--Backstage-->
+            <Fluent:Ribbon.Menu>
+                <Fluent:ApplicationMenu Header="File">
+                    <Fluent:MenuItem Header="New" Icon="Images/icons8-file-26.png" Name="createNewButton" Click="createNewButton_Click"
+                                     RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Fluent:MenuItem Header="Open" Icon="Images/icons8-opened-folder-26.png" Name="openFileButton" Click="openFileButton_Click"
+                                     RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Fluent:MenuItem Header="Save" Icon="Images/icons8-save-26.png" Name="saveFileButton" Click="saveFileButton_Click"
+                                     RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Fluent:MenuItem Header="Save as png" Icon="Images/icons8-save-as-26.png" Name="saveAsPngBtn" Click="saveAsPngButton_Click"
+                                     RenderOptions.BitmapScalingMode="HighQuality"/>
+                    
+                    <!--<Fluent:MenuItem Header="Import" Icon="Images/import.png" Name="importButton" Click="importButton_Click"
+                                     RenderOptions.BitmapScalingMode="HighQuality"/>-->
+                </Fluent:ApplicationMenu>
+            </Fluent:Ribbon.Menu>
+
+            <!--Tabs-->
+            <Fluent:RibbonTabItem Header="Home">
+                <!--Clipboard-->
+                <Fluent:RibbonGroupBox Header="Clipboard">
+                    <Fluent:UniformGridWithItemSize Margin="4,4,4,0">
+                        <Fluent:Button Header="Paste" ToolTip="Paste" Size="Large" CanAddToQuickAccessToolBar="False" Click="onPaste">
+                            <Fluent:Button.LargeIcon>
+                                <Image Source="Images/icons8-paste-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:Button.LargeIcon>
+                        </Fluent:Button>
+                        <Fluent:RibbonGroupBoxWrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Fluent:Button Header="Copy" Size="Small" ToolTip="Copy" Click="onCopy">
+                                <Fluent:Button.LargeIcon>
+                                    <Image Source="Images/icons8-copy-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Fluent:Button.LargeIcon>
+                            </Fluent:Button>
+                            <Fluent:Button Header="Cut" Size="Small" ToolTip="Cut" Click="onCut">
+                                <Fluent:Button.LargeIcon>
+                                    <Image Source="Images/icons8-cut-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Fluent:Button.LargeIcon>
+                            </Fluent:Button>
+                        </Fluent:RibbonGroupBoxWrapPanel>
+                    </Fluent:UniformGridWithItemSize>
+                </Fluent:RibbonGroupBox>
+
+                <!--Tool-->
+                <Fluent:RibbonGroupBox Header="Tool" CanAddToQuickAccessToolBar="False">
+                    <StackPanel Orientation="Horizontal" Margin="4,4,4,0">
+                        <Fluent:ToggleButton Name="editModeButton" Header="Edit Mode" Size="Large" ToolTip="Delete" Click="onChange_ToggleButton">
+                            <Fluent:ToggleButton.Icon>
+                                <Image Source="Images/icons8-edit-image-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:ToggleButton.Icon>
+                            <Fluent:ToggleButton.LargeIcon>
+                                <Image Source="Images/icons8-edit-image-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:ToggleButton.LargeIcon>
+                        </Fluent:ToggleButton>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Fluent:ToggleButton Name="fillColorButton" Header="Fill color" Size="Small" ToolTip="Fill color" Click="onChange_ToggleButton">
+                                <Fluent:ToggleButton.Icon>
+                                    <Image Source="Images/icons8-fill-color-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Fluent:ToggleButton.Icon>
+                            </Fluent:ToggleButton>
+                            <Fluent:ToggleButton Name="textModeButton" Header="Text" Size="Small" ToolTip="Text" Click="onChange_ToggleButton">
+                                <Fluent:ToggleButton.Icon>
+                                    <Image Source="Images/icons8-typography-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Fluent:ToggleButton.Icon>
+                            </Fluent:ToggleButton>
+
+                            <Fluent:Button Header="Delete" Size="Small" ToolTip="Delete" Click="onDelete">
+                                <Fluent:Button.Icon>
+                                    <Image Source="Images/icons8-trash-can-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Fluent:Button.Icon>
+                            </Fluent:Button>
+                        </StackPanel>
+                    </StackPanel>
+
+                </Fluent:RibbonGroupBox>
+
+                <!--Style-->
+                <Fluent:RibbonGroupBox Header="Style">
+                    <StackPanel Orientation="Vertical" Margin="4,4,4,0">
+                        <Image Source="Images/icons8-horizontal-line-26.png"></Image>
+                        <Fluent:ComboBox Name="strokeStyleComboBox" IsEditable="False" IsReadOnly="True" CanAddToQuickAccessToolBar="False" HorizontalAlignment="Center" SelectionChanged="onStrokeStyleChanged" >
+                            <ComboBoxItem IsSelected="True" HorizontalAlignment="Center">
+                                <TextBlock Text="__________" FontWeight="ExtraBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </ComboBoxItem>
+
+                            <ComboBoxItem HorizontalAlignment="Center">
+                                <TextBlock Text="_.._.._.._.." FontWeight="ExtraBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </ComboBoxItem>
+
+                            <ComboBoxItem HorizontalAlignment="Center">
+                                <TextBlock Text="............" FontWeight="ExtraBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </ComboBoxItem>
+
+                            <ComboBoxItem HorizontalAlignment="Center">
+                                <TextBlock Text="_ _ _ _ _ _ " FontWeight="ExtraBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </ComboBoxItem>
+                        </Fluent:ComboBox>
+                    </StackPanel>
+                </Fluent:RibbonGroupBox>
+
+                <!--Shapes-->
+                <Fluent:RibbonGroupBox Header="Shapes">
+                    <!--Add shapes' icon here-->
+                    <Border Margin="4,4,4,0" CornerRadius="4"
+                            BorderBrush="{DynamicResource Fluent.Ribbon.Brushes.RibbonGroupBox.Collapsed.BorderBrush}"
+                            Padding="4, 4,4,4"
+                            BorderThickness="1,1,1,1">
+                        <ListView Width="200" Height="60" Name="shapeListView" SelectionChanged="onShape_SelectionChanged"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="{x:Null}" Background="{x:Null}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding Icon}" Width="25" Height="25" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="ToolTip" Value="{Binding Name}"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </Border>
+                </Fluent:RibbonGroupBox>
+
+                <!--Size-->
+                <Fluent:RibbonGroupBox Header="Size" >
+                    <StackPanel Orientation="Vertical" Margin="4,4,4,0">
+                        <Image Source="Images/icons8-line-width-26.png"></Image>
+                        <Fluent:ComboBox Name="penSizeComboBox" IsEditable="False" IsReadOnly="True" CanAddToQuickAccessToolBar="False" SelectionChanged="onPenSizeChanged" >
+                            <ComboBoxItem IsSelected="True" Content="1 pixel"/>
+                            <ComboBoxItem Content="3 pixel"/>
+                            <ComboBoxItem Content="5 pixel"/>
+                            <ComboBoxItem Content="8 pixel"/>
+                        </Fluent:ComboBox>
+                    </StackPanel>
+                </Fluent:RibbonGroupBox>
+
+                <Fluent:RibbonGroupBox Header="Colors">
+                    <Grid Margin="4, 4, 4, 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <RadioButton Margin="4,4,16,4" Grid.RowSpan="2" Grid.Row="0" Grid.Column="0" Name="currentColorPreview" Width="36" Height="36" Style="{StaticResource ColorChangeRadioButton}" d:Background="Black" Background="{Binding CurrentColor, Mode=OneWay}" Click="onEditColor_ButtonClick"/>
+
+                        <RadioButton Name="Black"   
+                                     IsChecked="True"
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                     Margin="4,4,4,4"
+                                     Grid.Row="0" Grid.Column="1" 
+                                     Width="24" Height="24" 
+                                     Style="{StaticResource ColorChangeRadioButton}" 
+                                     Background="Black"/>
+                        <RadioButton Name="Gray"    
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                     Margin="4,4,4,4" 
+                                     Grid.Row="0" Grid.Column="2" 
+                                     Width="24" Height="24"
+                                     Style="{StaticResource ColorChangeRadioButton}" 
+                                     Background="Gray"/>
+                        <RadioButton Name="DarkRed" 
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                        Margin="4,4,4,4" Grid.Row="0" Grid.Column="3" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="DarkRed"/>
+                        <RadioButton Name="Red"
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                        Margin="4,4,4,4" Grid.Row="0" Grid.Column="5" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Orange"/>
+                        <RadioButton Name="Orange"  
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                        Margin="4,4,4,4" Grid.Row="0" Grid.Column="4" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Red"/>
+                        <RadioButton Name="Yellow"  
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                        Margin="4,4,4,4" Grid.Row="1" Grid.Column="1" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Yellow"/>
+                        <RadioButton Name="Green"   
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                     Margin="4,4,4,4" Grid.Row="1" Grid.Column="2" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Green"/>
+                        <RadioButton Name="Turquoise" 
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                     Margin="4,4,4,4" Grid.Row="1" Grid.Column="3" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Turquoise"/>
+                        <RadioButton Name="Indigo" 
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                     Margin="4,4,4,4" Grid.Row="1" Grid.Column="4" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Indigo"/>
+                        <RadioButton Name="Purple"
+                                     GroupName="changeColor"
+                                     Checked="onChangePenColor"
+                                     Margin="4,4,4,4" Grid.Row="1" Grid.Column="5" Width="24" Height="24" Style="{StaticResource ColorChangeRadioButton}" Background="Purple"/>
+                    </Grid>
+                </Fluent:RibbonGroupBox>
+                
+                <!--Zoom-->
+                <Fluent:RibbonGroupBox Header="Zoom" CanAddToQuickAccessToolBar="False">
+                    <StackPanel Orientation="Vertical" Margin="4,4,4,0">
+                            <Fluent:ToggleButton Name="zoomInButton" Header="Zoom in" Size="Small" ToolTip="Zoom in" Click="onZoom_ToggleButton">
+                            <Fluent:ToggleButton.Icon>
+                                <Image Source="Images/icons8-zoom-in-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:ToggleButton.Icon>
+                        </Fluent:ToggleButton>
+                        <Fluent:ToggleButton Name="zoomOutButton" Header="Zoom out" Size="Small" ToolTip="Zoom out" Click="onZoom_ToggleButton">
+                            <Fluent:ToggleButton.Icon>
+                                <Image Source="Images/icons8-zoom-out-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:ToggleButton.Icon>
+                        </Fluent:ToggleButton>
+                        <Fluent:Button Name="zoomRestoreButton" Header="Zoom out" Size="Small" ToolTip="Zoom out" Click="onZoom_ToggleButton">
+                            <Fluent:Button.Icon>
+                                <Image Source="Images/100.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
+                    </StackPanel>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+        </Fluent:Ribbon>
+
+        <!--Drawing area-->
+        <Grid Grid.Row="1" Name="drawingContainer"  MouseWheel="onMouseWheelZoom">
+            <Canvas Name="drawingArea" Background="White" ClipToBounds="True" RenderTransformOrigin="0.5,0.5" >
+                <Canvas.RenderTransform>
+                    <MatrixTransform/>
+                </Canvas.RenderTransform>
+            </Canvas>
+            <Border Background="Transparent" MouseDown="onCanvasMouseDown" MouseUp="onCanvasMouseUp" MouseMove="onCanvasMouseMove"></Border>
+            <!--<Border Background="Transparent" IsHitTestVisible="True" MouseDown="drawingArea_MouseDown" MouseUp="drawingArea_MouseUp"
+                MouseMove="drawingArea_MouseMove" MouseEnter="drawingArea_MouseEnter" MouseLeave="drawingArea_MouseLeave"/>
+            <Canvas Name="drawingArea" IsHitTestVisible="False" ClipToBounds="True" Background="White" Height="550" Width="1250"/>-->
+        </Grid>
+    </Grid>
+</Fluent:RibbonWindow>
