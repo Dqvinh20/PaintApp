@@ -29,11 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0">
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
     <PackageReference Include="Fluent.Ribbon" Version="9.0.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
@@ -41,9 +37,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Ellipse2D\Ellipse2D.csproj" />
-    <ProjectReference Include="..\Line2D\Line2D.csproj" />
-    <ProjectReference Include="..\Rectangle2D\Rectangle2D.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -98,8 +91,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Images\100.png">
+    <None Update="Images\icons8-zoom-to-actual-size-32.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\zoom-100.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Images\icons8-file-26.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -10,7 +10,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Shapes;    
 using Common;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
@@ -23,8 +23,6 @@ namespace PaintApp
         private int _currentThickness = 1;
         private DoubleCollection _currentStrokeStyle = new DoubleCollection();
         private SolidColorBrush _currentColor = new SolidColorBrush(Colors.Black);
-        private IShape _preview = null;
-        private Matrix _originalMatrix;
 
         // Toggle var
         private bool _isDrawing = false;
@@ -44,6 +42,8 @@ namespace PaintApp
         // Shapes 
         Stack<IShape> _drawedShapes = new Stack<IShape>();   
         Stack<IShape> _redoShapeStack = new Stack<IShape>();
+        private IShape _preview = null;
+        private Matrix _originalMatrix;
 
         // File path
         private String? filePath = null;
@@ -68,6 +68,64 @@ namespace PaintApp
         }
 
         #region MainWindow function
+        private void _resetToDefault() {
+            Title = "Paint - Untitle";
+            _isChanged = false;
+            _isDrawing = false;
+            _isNewDrawShape = false;
+
+            filePath = null;
+            fileName = null;
+
+            CurrentColor = new SolidColorBrush(Colors.Black);
+
+            _updateToggleAttribute();
+            _updateSelectedShapePrototype(0);
+
+            if (_loadedShapePrototypes.Count != 0)
+            {
+                shapeListView.SelectedIndex = 0;
+            }
+            strokeStyleComboBox.SelectedIndex = 0;
+            penSizeComboBox.SelectedIndex = 0;
+
+            _drawedShapes.Clear();
+            _redoShapeStack.Clear();
+
+            drawingArea.Children.Clear();
+            drawingArea.Background = new SolidColorBrush(Colors.White);
+
+            _updateToggleAttribute();
+        }
+
+        private void _loadDynamicShapePrototypes() {
+            _loadedShapePrototypes = _shapeFactoryIns.GetPrototypes().Values.ToList();
+            shapeListView.ItemsSource = _loadedShapePrototypes;
+
+            if (_loadedShapePrototypes.Count == 0)
+            {
+                return;
+            }
+
+            shapeListView.SelectedIndex = 0;
+        }
+
+        private void _updateSelectedShapePrototype(int index) {
+            if (index >= _loadedShapePrototypes.Count || index < 0) { return; }
+
+            _selectedShapePrototypeName = _loadedShapePrototypes[index].Name;
+            _preview = _shapeFactoryIns.CreateShape(_selectedShapePrototypeName);
+        }
+
+        private void _updateToggleAttribute() {
+            redoButton.IsEnabled = _redoShapeStack.Count > 0;
+            undoButton.IsEnabled = _drawedShapes.Count > 0;
+        }
+
+        private void onShape_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var index = shapeListView.SelectedIndex;
+            _updateSelectedShapePrototype(index);
+        }
 
         private void PaintApp_Loaded(object sender, RoutedEventArgs e)
         {
@@ -78,7 +136,6 @@ namespace PaintApp
 
         private void PaintApp_Closing(object sender, CancelEventArgs e)
         {
-            //if (_drawedShapes.Count == 0) return;
             if (_isChanged == false)
             {
                 return;
@@ -163,7 +220,6 @@ namespace PaintApp
 
         private void createNewButton_Click(object sender, RoutedEventArgs e)
         {
-            //if (_drawedShapes.Count == 0)
             if (_isChanged == false)
             {
                 _resetToDefault();
@@ -241,11 +297,6 @@ namespace PaintApp
             e.Handled = true;
         }
 
-        private void importButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void saveAsPngButton_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.SaveFileDialog();
@@ -275,66 +326,6 @@ namespace PaintApp
         }
 
         #endregion
-
-        private void _resetToDefault()
-        {
-            Title = "Paint - Untitle";
-            _isChanged = false;
-            _isDrawing = false;
-            _isNewDrawShape = false;
-
-            filePath = null;
-            fileName = null;
-
-            CurrentColor = new SolidColorBrush(Colors.Black);
-
-            _updateToggleAttribute();
-            _updateSelectedShapePrototype(0);
-
-            strokeStyleComboBox.SelectedIndex = 0;
-            penSizeComboBox.SelectedIndex = 0;
-
-            _drawedShapes.Clear();
-            _redoShapeStack.Clear();
-
-            drawingArea.Children.Clear();
-            drawingArea.Background = new SolidColorBrush(Colors.White);
-
-            _updateToggleAttribute();
-        }
-
-        private void _loadDynamicShapePrototypes()
-        {
-            _loadedShapePrototypes = _shapeFactoryIns.GetPrototypes().Values.ToList();
-            shapeListView.ItemsSource = _loadedShapePrototypes;
-
-            if (_loadedShapePrototypes.Count == 0)
-            {
-                return;
-            }
-
-            shapeListView.SelectedIndex = 0;
-        }
-
-        private void _updateSelectedShapePrototype(int index)
-        {
-            if (index >= _loadedShapePrototypes.Count || index < 0) { return; }
-
-            _selectedShapePrototypeName = _loadedShapePrototypes[index].Name;
-            _preview = _shapeFactoryIns.CreateShape(_selectedShapePrototypeName);
-        }
-
-        private void _updateToggleAttribute()
-        {
-            redoButton.IsEnabled = _redoShapeStack.Count > 0;
-            undoButton.IsEnabled = _drawedShapes.Count > 0;
-        }
-
-        private void onShape_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var index = shapeListView.SelectedIndex;
-            _updateSelectedShapePrototype(index);
-        }
 
         #region QuickAccessItems
         private void onUndoButtonClick(object sender, RoutedEventArgs e)
@@ -366,24 +357,6 @@ namespace PaintApp
                 _updateToggleAttribute();
             }
         }
-        #endregion
-
-        #region Clipboard copy paste cut
-        private void onPaste(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void onCopy(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void onCut(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         #endregion
 
         #region StrokeStyle
@@ -517,67 +490,53 @@ namespace PaintApp
         }
         #endregion
 
-        #region Zoom Mode ZoomIn ZoomOut ZoomRestore100%
-        private void onZoom_ToggleButton(object sender, RoutedEventArgs e)
-        {
-            //if (sender is Fluent.ToggleButton)
-            //{
-            //    Fluent.ToggleButton button = (Fluent.ToggleButton)sender;
+        #region ZoomMode ZoomIn ZoomOut ZoomRestore100%
 
-            //    _isZooming = (bool)zoomInButton.IsChecked || (bool)zoomOutButton.IsChecked;
-            //    _isZoomingIn = button.Name.Equals("zoomInButton") && (bool)zoomInButton.IsChecked;
-            //    zoomInButton.IsChecked = _isZooming && _isZoomingIn;
-            //    zoomOutButton.IsChecked = _isZooming && !_isZoomingIn;
-            //}
-            //else
-            //{
-            //    zoomInButton.IsChecked = false;
-            //    zoomOutButton.IsChecked = false;
-            //    _isZooming = false;
-            //    _onZoomRestore();
-            //}
+        private void OnZoomRestore(object sender, RoutedEventArgs e) 
+        {
+            var currMatrixTransform = drawingArea.RenderTransform as MatrixTransform;
+            currMatrixTransform!.Matrix = _originalMatrix;
         }
 
-        private void _onZoomRestore()
+        private void OnZoomIn(object sender, RoutedEventArgs e) 
         {
-            //var currMatrixTransform = drawingArea.RenderTransform as MatrixTransform;
-            //currMatrixTransform.Matrix = _originalMatrix;
-        }
-
-        private void _onZoomIn(Point point)
-        {
+            Point point = new Point(drawingArea.ActualWidth / 2, drawingArea.ActualHeight / 2);
             Point center = drawingArea.TransformToAncestor(drawingContainer).Transform(point);
 
             var matTrans = drawingArea.RenderTransform as MatrixTransform;
-            var mat = matTrans.Matrix;
+            var mat = matTrans!.Matrix;
             var scale = 1.1;
             mat.ScaleAt(scale, scale, center.X, center.Y);
             matTrans.Matrix = mat;
         }
 
-        private void _onZoomOut(Point point)
+        private void OnZoomOut(object sender, RoutedEventArgs e)
         {
-            Point point1 = new Point(drawingArea.ActualWidth / 2, drawingArea.ActualHeight / 2);
+            Point point = new Point(drawingArea.ActualWidth / 2, drawingArea.ActualHeight / 2);
             Point center = drawingArea.TransformToAncestor(drawingContainer).Transform(point);
 
             var matTrans = drawingArea.RenderTransform as MatrixTransform;
-            var mat = matTrans.Matrix;
+            var mat = matTrans!.Matrix;
             var scale = 1 / 1.1;
             mat.ScaleAt(scale, scale, center.X, center.Y);
             matTrans.Matrix = mat;
         }
 
-        private void onMouseWheelZoom(object sender, MouseWheelEventArgs e)
-        {
-            //var matTrans = drawingArea.RenderTransform as MatrixTransform;
-            //var pos1 = e.GetPosition(drawingArea);
+        #endregion
 
-            //var scale = e.Delta > 0 ? 1.1 : 1 / 1.1;
+        #region Not develop yet
 
-            //var mat = matTrans.Matrix;
-            //mat.ScaleAt(scale, scale, pos1.X, pos1.Y);
-            //matTrans.Matrix = mat;
-            //e.Handled = true;
+        #region Clipboard copy paste cut
+        private void onPaste(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void onCopy(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void onCut(object sender, RoutedEventArgs e) {
+
         }
 
         #endregion
@@ -608,5 +567,7 @@ namespace PaintApp
         {
 
         }
+
+        #endregion
     }
 }

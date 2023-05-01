@@ -8,7 +8,7 @@ namespace Common
 {
     public class PaintShapeFactory
     {
-        private static PaintShapeFactory _instance = null;
+        private static PaintShapeFactory? _instance = null;
         private Dictionary<string, IShape> _prototypes = new Dictionary<string, IShape>();
 
         public static PaintShapeFactory Instance
@@ -18,7 +18,8 @@ namespace Common
                 {
                     _instance = new PaintShapeFactory();
                 }
-                return _instance; }
+                return _instance;
+            }
         }
 
         private PaintShapeFactory() {
@@ -27,10 +28,12 @@ namespace Common
 
         public IShape CreateShape(string name)
         {
-            IShape shape = null;
-            if (_prototypes.ContainsKey(name))
-                shape = _prototypes[name].Clone();
-            return (IShape) shape;
+            if (!_prototypes.ContainsKey(name))
+            {
+                throw new KeyNotFoundException(name + " is not found in shape factory. Missing required DLL.");
+            }
+
+            return _prototypes[name].Clone();
         }
 
         public void Reload()
@@ -41,8 +44,7 @@ namespace Common
 
         private IShape? _getPaintShapeFromDll(FileInfo fileInfo)
         {
-            Assembly assembly = Assembly.Load(AssemblyName.GetAssemblyName(fileInfo.FullName));
-            //Assembly assembly = Assembly.LoadFile(fileInfo.FullName);
+            Assembly assembly = Assembly.LoadFile(fileInfo.FullName);
             Type[] types = assembly.GetTypes();
 
             IEnumerable<IShape?> results = types.Where(type =>
@@ -66,8 +68,7 @@ namespace Common
         public void LoadShapePrototypes()
         {
             string exePath = Assembly.GetExecutingAssembly().Location;
-            //string _folder = Path.GetDirectoryName(exePath) + "/shapes";
-            string _folder = Path.GetDirectoryName(exePath);
+            string _folder = Path.GetDirectoryName(exePath) + "/shapes";
 
             DirectoryInfo shapesDir = new DirectoryInfo(_folder);
             if (!shapesDir.Exists)

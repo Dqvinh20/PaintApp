@@ -55,8 +55,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Fluent:Ribbon Grid.Row="0" CanCustomizeQuickAccessToolBarItems="False" CanQuickAccessLocationChanging="False" IsQuickAccessToolBarMenuDropDownVisible="False">
-            <Fluent:Ribbon.QuickAccessItems>
+        <Fluent:Ribbon Panel.ZIndex="100" Grid.Row="0" CanCustomizeQuickAccessToolBarItems="False" CanQuickAccessLocationChanging="False" IsQuickAccessToolBarMenuDropDownVisible="False">
+            <Fluent:Ribbon.QuickAccessItems >
                 <Fluent:QuickAccessMenuItem IsChecked="true">
                     <Fluent:Button Name="undoButton" Header="Undo" Icon="Images/icons8-undo-26.png" Click="onUndoButtonClick"/>
                 </Fluent:QuickAccessMenuItem>
@@ -76,16 +76,13 @@
                                      RenderOptions.BitmapScalingMode="HighQuality"/>
                     <Fluent:MenuItem Header="Save as png" Icon="Images/icons8-save-as-26.png" Name="saveAsPngBtn" Click="saveAsPngButton_Click"
                                      RenderOptions.BitmapScalingMode="HighQuality"/>
-                    
-                    <!--<Fluent:MenuItem Header="Import" Icon="Images/import.png" Name="importButton" Click="importButton_Click"
-                                     RenderOptions.BitmapScalingMode="HighQuality"/>-->
                 </Fluent:ApplicationMenu>
             </Fluent:Ribbon.Menu>
 
             <!--Tabs-->
             <Fluent:RibbonTabItem Header="Home">
                 <!--Clipboard-->
-                <Fluent:RibbonGroupBox Header="Clipboard">
+                <!--<Fluent:RibbonGroupBox Header="Clipboard">
                     <Fluent:UniformGridWithItemSize Margin="4,4,4,0">
                         <Fluent:Button Header="Paste" ToolTip="Paste" Size="Large" CanAddToQuickAccessToolBar="False" Click="onPaste">
                             <Fluent:Button.LargeIcon>
@@ -105,10 +102,10 @@
                             </Fluent:Button>
                         </Fluent:RibbonGroupBoxWrapPanel>
                     </Fluent:UniformGridWithItemSize>
-                </Fluent:RibbonGroupBox>
+                </Fluent:RibbonGroupBox>-->
 
                 <!--Tool-->
-                <Fluent:RibbonGroupBox Header="Tool" CanAddToQuickAccessToolBar="False">
+                <!--<Fluent:RibbonGroupBox Header="Tool" CanAddToQuickAccessToolBar="False">
                     <StackPanel Orientation="Horizontal" Margin="4,4,4,0">
                         <Fluent:ToggleButton Name="editModeButton" Header="Edit Mode" Size="Large" ToolTip="Delete" Click="onChange_ToggleButton">
                             <Fluent:ToggleButton.Icon>
@@ -138,7 +135,7 @@
                         </StackPanel>
                     </StackPanel>
 
-                </Fluent:RibbonGroupBox>
+                </Fluent:RibbonGroupBox>-->
 
                 <!--Style-->
                 <Fluent:RibbonGroupBox Header="Style">
@@ -280,37 +277,36 @@
                 <!--Zoom-->
                 <Fluent:RibbonGroupBox Header="Zoom" CanAddToQuickAccessToolBar="False">
                     <StackPanel Orientation="Vertical" Margin="4,4,4,0">
-                            <Fluent:ToggleButton Name="zoomInButton" Header="Zoom in" Size="Small" ToolTip="Zoom in" Click="onZoom_ToggleButton">
-                            <Fluent:ToggleButton.Icon>
-                                <Image Source="Images/icons8-zoom-in-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </Fluent:ToggleButton.Icon>
-                        </Fluent:ToggleButton>
-                        <Fluent:ToggleButton Name="zoomOutButton" Header="Zoom out" Size="Small" ToolTip="Zoom out" Click="onZoom_ToggleButton">
-                            <Fluent:ToggleButton.Icon>
-                                <Image Source="Images/icons8-zoom-out-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            </Fluent:ToggleButton.Icon>
-                        </Fluent:ToggleButton>
-                        <Fluent:Button Name="zoomRestoreButton" Header="Zoom out" Size="Small" ToolTip="Zoom out" Click="onZoom_ToggleButton">
+                        <Fluent:Button Name="zoomRestoreButton" Header="Zoom restore" Size="Middle" ToolTip="Zoom restore" Click="OnZoomRestore">
                             <Fluent:Button.Icon>
-                                <Image Source="Images/100.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Image Source="Images/icons8-zoom-to-actual-size-32.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </Fluent:Button.Icon>
                         </Fluent:Button>
+                        <Fluent:Button Name="zoomInButton" Header="Zoom in" Size="Middle" ToolTip="Zoom in" Click="OnZoomIn">
+                            <Fluent:Button.Icon>
+                                <Image Source="Images/icons8-zoom-in-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
+
+                        <Fluent:Button Name="zoomOutButton" Header="Zoom out" Size="Middle" ToolTip="Zoom out" Click="OnZoomOut">
+                            <Fluent:Button.Icon>
+                                <Image Source="Images/icons8-zoom-out-26.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Fluent:Button.Icon>
+                        </Fluent:Button>
+                        
                     </StackPanel>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
 
         <!--Drawing area-->
-        <Grid Grid.Row="1" Name="drawingContainer"  MouseWheel="onMouseWheelZoom">
+        <Grid Panel.ZIndex="0" Grid.Row="1" Name="drawingContainer">
             <Canvas Name="drawingArea" Background="White" ClipToBounds="True" RenderTransformOrigin="0.5,0.5" >
                 <Canvas.RenderTransform>
                     <MatrixTransform/>
                 </Canvas.RenderTransform>
             </Canvas>
             <Border Background="Transparent" MouseDown="onCanvasMouseDown" MouseUp="onCanvasMouseUp" MouseMove="onCanvasMouseMove"></Border>
-            <!--<Border Background="Transparent" IsHitTestVisible="True" MouseDown="drawingArea_MouseDown" MouseUp="drawingArea_MouseUp"
-                MouseMove="drawingArea_MouseMove" MouseEnter="drawingArea_MouseEnter" MouseLeave="drawingArea_MouseLeave"/>
-            <Canvas Name="drawingArea" IsHitTestVisible="False" ClipToBounds="True" Background="White" Height="550" Width="1250"/>-->
         </Grid>
     </Grid>
 </Fluent:RibbonWindow>
