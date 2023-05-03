@@ -94,9 +94,6 @@
     <None Update="Images\icons8-zoom-to-actual-size-32.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Images\zoom-100.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Images\icons8-file-26.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
